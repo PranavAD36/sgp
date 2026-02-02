@@ -1,0 +1,132 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #f9f9f9);
+}
+
+/* HEADER */
+header {
+  background: #0a2a66;
+  color: white;
+  padding: 16px 30px;
+  font-size: 24px;
+  font-weight: bold;
+  position: relative;
+}
+
+.header-actions {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.header-actions a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 14px;
+  border: 2px solid white;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.header-actions a:hover {
+  background: white;
+  color: #0a2a66;
+}
+
+/* FOOTER */
+footer {
+  background: #000;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* COMMON */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 140px);
+}
+
+.box {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  text-align: center;
+  width: 380px;
+}
+
+/* 🔹 ROLE SELECT BUTTONS (FIXED) */
+.role-select {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.role-select button {
+  width: 32%;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  background: #ddd;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.role-select button.active {
+  background: #0a2a66;
+  color: white;
+}
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 11px;
+  margin-bottom: 15px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* FORGOT PASSWORD */
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  margin-bottom: 15px;
+  text-decoration: none;
+  color: #0a2a66;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* MAIN BUTTON */
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #0a2a66;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s;
+  margin-bottom: 20px; /* space after login */
+}
+
+.btn:hover {
+  background: #061a40;
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>ScanMark
+<div class="header-actions">
+<button onclick="history.back()">Back</button>
+<a href="login.html">Logout</a>
+</div>
+</header>
+
+<div class="container">
+<div class="box">
+<h2>Welcome Student</h2>
+
+<input id="lecCode" placeholder="Lecture Code">
+<button class="btn" onclick="markAttendance()">Mark Attendance</button>
+
+<hr>
+
+<button class="btn" onclick="viewAttendance()">View Attendance</button>
+
+</div>
+</div>
+
+<footer>© 2026</footer>
+
+<script type="module">
+import { postData, getData } from "./api.js";
+
+async function markAttendance(){
+const id = localStorage.getItem("studentId");
+
+const res = await postData("/attendance/mark",{
+studentId: id,
+date: new Date().toISOString().split("T")[0],
+subject: "SE",
+status: "Present",
+lectureCode: lecCode.value
+});
+
+alert(res.message);
+}
+
+async function viewAttendance(){
+const id = localStorage.getItem("studentId");
+const data = await getData("/attendance/"+id);
+alert(JSON.stringify(data));
+}
+
+window.viewAttendance = viewAttendance;
+window.markAttendance = markAttendance;
+</script>
+
+</body>
+</html>

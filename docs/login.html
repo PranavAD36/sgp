@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScanMark Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+ScanMark
+<div class="header-actions">
+<a href="about.html">About</a>
+</div>
+</header>
+
+<div class="container">
+<div class="box">
+<h2>Login Portal</h2>
+
+<div class="role-select">
+<button id="studentBtn" class="active" onclick="setRole('student')">Student</button>
+<button id="facultyBtn" onclick="setRole('faculty')">Faculty</button>
+<button id="adminBtn" onclick="setRole('admin')">Admin</button>
+</div>
+
+<input type="hidden" id="role" value="student">
+
+<input id="uid" type="text" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
+
+<button class="btn" onclick="login()">Login</button>
+</div>
+</div>
+
+<footer>© 2026</footer>
+
+<script type="module">
+import { postData } from "./api.js";
+
+function setRole(role){
+document.getElementById("role").value=role;
+studentBtn.classList.remove("active");
+facultyBtn.classList.remove("active");
+adminBtn.classList.remove("active");
+if(role==="student") studentBtn.classList.add("active");
+if(role==="faculty") facultyBtn.classList.add("active");
+if(role==="admin") adminBtn.classList.add("active");
+}
+
+async function login(){
+const role=document.getElementById("role").value;
+const id=document.getElementById("uid").value;
+const pass=document.getElementById("pass").value;
+
+let url="",body={};
+
+if(role==="student"){url="/auth/student-login";body={studentId:id,password:pass};}
+if(role==="faculty"){url="/auth/faculty-login";body={facultyId:id,password:pass};}
+if(role==="admin"){url="/auth/admin-login";body={adminId:id,password:pass};}
+
+const res=await postData(url,body);
+alert(res.message);
+
+if(res.message.includes("Success")){
+if(role==="student"){localStorage.setItem("studentId",id);window.location="studentLogin.html";}
+if(role==="faculty") window.location="facultyLogin.html";
+if(role==="admin") window.location="adminLogin.html";
+}
+}
+
+window.setRole=setRole;
+window.login=login;
+</script>
+
+</body>
+</html>

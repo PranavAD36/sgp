@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>ScanMark
+<div class="header-actions">
+<button onclick="history.back()">Back</button>
+<a href="login.html">Logout</a>
+</div>
+</header>
+
+<div class="container">
+<div class="box">
+<h2>Admin Panel</h2>
+
+<h3>Add Student</h3>
+<input id="sid" placeholder="Student ID">
+<input id="sname" placeholder="Name">
+<input id="birth" placeholder="Birthdate">
+<button class="btn" onclick="addStudent()">Add Student</button>
+
+<hr>
+
+<h3>Add Faculty</h3>
+<input id="fid" placeholder="Faculty ID">
+<input id="fname" placeholder="Name">
+<input id="fpass" placeholder="Password">
+<button class="btn" onclick="addFaculty()">Add Faculty</button>
+
+</div>
+</div>
+
+<footer>© 2026</footer>
+
+<script type="module">
+import { postData } from "./api.js";
+
+async function addStudent(){
+const res = await postData("/auth/add-student",{
+studentId:sid.value,
+name:sname.value,
+birthdate:birth.value
+});
+alert(res.message);
+}
+
+async function addFaculty(){
+const res = await postData("/auth/add-faculty",{
+facultyId:fid.value,
+name:fname.value,
+password:fpass.value
+});
+alert(res.message);
+}
+
+window.addStudent = addStudent;
+window.addFaculty = addFaculty;
+</script>
+
+</body>
+</html>

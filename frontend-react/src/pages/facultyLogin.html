@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Faculty Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>ScanMark
+<div class="header-actions">
+<button onclick="history.back()">Back</button>
+<a href="login.html">Logout</a>
+</div>
+</header>
+
+<div class="container">
+<div class="box">
+<h2>Faculty Panel</h2>
+
+<button class="btn" onclick="startLec()">Activate QR</button>
+<button class="btn" onclick="endLec()">End QR Session</button>
+
+</div>
+</div>
+
+<footer>© 2026</footer>
+
+<script type="module">
+import { startLecture, endLecture } from "./api.js";
+
+async function startLec(){
+const res = await startLecture({
+lectureCode:"SE101",
+subject:"SE",
+day:"Monday",
+startTime:"9:10",
+endTime:"10:10"
+});
+alert(res.message);
+}
+
+async function endLec(){
+const res = await endLecture({
+lectureCode:"SE101"
+});
+alert(res.message);
+}
+
+window.startLec = startLec;
+window.endLec = endLec;
+</script>
+
+</body>
+</html>
