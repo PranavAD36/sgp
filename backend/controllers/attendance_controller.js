@@ -1,4 +1,4 @@
-const Attendance = require("../models/Attendance");
+const Attendance = require("../models/temp");
 const Lecture = require("../models/Lecture");
 
 // FACULTY / QR MARK ATTENDANCE
