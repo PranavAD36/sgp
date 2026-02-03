@@ -1,4 +1,4 @@
-const BASE_URL = "http://10.103.196.119:5000/api";
+const BASE_URL = "https://sgp-backend-obwi.onrender.com/api";
 
 async function postData(url, data) {
   const res = await fetch(BASE_URL + url, {

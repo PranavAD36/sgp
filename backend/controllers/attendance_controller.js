@@ -1,4 +1,4 @@
-const Attendance = require("../models/Attendance");
+const Attendance = require("../models/temp");
 const Lecture = require("../models/Lecture");
 
 // FACULTY / QR MARK ATTENDANCE
@@ -6,15 +6,16 @@ exports.markAttendance = async (req, res) => {
   try {
     const { studentId, date, subject, status, lectureCode } = req.body;
 
-    // 1. Lecture Active Check (IMPORTANT FIX)
-    const lecture = await Lecture.findOne({
-      lectureCode: lectureCode,
-      status: "active"
-    });
+    // Lecture Active Check
+const lecture = await Lecture.findOne({
+  lectureCode: lectureCode,
+  status: "active"
+});
 
-    if (!lecture) {
-      return res.json({ message: "Lecture Not Active" });
-    }
+if (!lecture) {
+  return res.json({ message: "Lecture Not Active" });
+}
+
 
     // 2. Duplicate Check
     const existing = await Attendance.findOne({
