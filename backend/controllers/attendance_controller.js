@@ -1,6 +1,7 @@
-const Attendance = require("../models/Attendance"); //temp->Attendance
+const Attendance = require("../models/Attendance");
 const Lecture = require("../models/Lecture");
 
+// MARK ATTENDANCE
 exports.markAttendance = async (req, res) => {
   try {
     const { studentId, date, subject, status, lectureCode } = req.body;
@@ -44,5 +45,19 @@ exports.markAttendance = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.json({ message: "Error Marking Attendance" });
+  }
+};
+
+// VIEW ATTENDANCE
+exports.getAttendance = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const data = await Attendance.find({ studentId });
+    res.json(data);
+
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Error Fetching Attendance" });
   }
 };
