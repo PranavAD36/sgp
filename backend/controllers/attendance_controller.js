@@ -1,30 +1,31 @@
-const Attendance = require("../models/temp");
+const Attendance = require("../models/temp"); //temp->Attendance
 const Lecture = require("../models/Lecture");
 
-// FACULTY / QR MARK ATTENDANCE
 exports.markAttendance = async (req, res) => {
   try {
     const { studentId, date, subject, status, lectureCode } = req.body;
 
-    // Lecture Active Check
-const lecture = await Lecture.findOne({
-  lectureCode: lectureCode,
-  status: "active"
-});
+    // 1. Lecture Active Check
+    const lecture = await Lecture.findOne({
+      lectureCode: lectureCode,
+      status: "active"
+    });
 
-if (!lecture) {
-  return res.json({ message: "Lecture Not Active" });
-}
+    if (!lecture) {
+      return res.json({ message: "Lecture Not Active" });
+    }
 
+    // 2. 30 Minute Duplicate Check
+    const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
 
-    // 2. Duplicate Check
     const existing = await Attendance.findOne({
       studentId: studentId,
-      lectureCode: lectureCode
+      lectureCode: lectureCode,
+      timeMarked: { $gt: thirtyMinAgo }
     });
 
     if (existing) {
-      return res.json({ message: "Already Marked" });
+      return res.json({ message: "Already Marked (30 Min Rule)" });
     }
 
     // 3. Save Attendance
@@ -43,18 +44,5 @@ if (!lecture) {
   } catch (err) {
     console.log(err);
     res.json({ message: "Error Marking Attendance" });
-  }
-};
-
-// STUDENT VIEW ATTENDANCE
-exports.getAttendance = async (req, res) => {
-  try {
-    const { studentId } = req.params;
-
-    const data = await Attendance.find({ studentId });
-    res.json(data);
-
-  } catch (err) {
-    res.json({ message: "Error Fetching Attendance" });
   }
 };

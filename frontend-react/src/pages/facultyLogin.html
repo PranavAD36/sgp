@@ -17,8 +17,16 @@
 <div class="box">
 <h2>Faculty Panel</h2>
 
+<input id="lecCode" placeholder="Lecture Code">
+
 <button class="btn" onclick="startLec()">Activate QR</button>
 <button class="btn" onclick="endLec()">End QR Session</button>
+
+<hr>
+
+<h3>Manual Attendance</h3>
+<input id="sid" placeholder="Student ID">
+<button class="btn" onclick="manualMark()">Mark Manually</button>
 
 </div>
 </div>
@@ -26,11 +34,14 @@
 <footer>© 2026</footer>
 
 <script type="module">
-import { startLecture, endLecture } from "./api.js";
+import { startLecture, endLecture, postData } from "./api.js";
 
 async function startLec(){
+const code = lecCode.value;
+if(!code){ alert("Enter Lecture Code"); return; }
+
 const res = await startLecture({
-lectureCode:"SE101",
+lectureCode: code,
 subject:"SE",
 day:"Monday",
 startTime:"9:10",
@@ -40,14 +51,37 @@ alert(res.message);
 }
 
 async function endLec(){
-const res = await endLecture({
-lectureCode:"SE101"
+const code = lecCode.value;
+if(!code){ alert("Enter Lecture Code"); return; }
+
+const res = await endLecture({ lectureCode: code });
+alert(res.message);
+}
+
+// NEW MANUAL MARK
+async function manualMark(){
+const code = lecCode.value;
+const student = sid.value;
+
+if(!code || !student){
+alert("Enter Lecture Code & Student ID");
+return;
+}
+
+const res = await postData("/attendance/mark",{
+studentId: student,
+date: new Date().toISOString().split("T")[0],
+subject: "SE",
+status: "Present",
+lectureCode: code
 });
+
 alert(res.message);
 }
 
 window.startLec = startLec;
 window.endLec = endLec;
+window.manualMark = manualMark;
 </script>
 
 </body>
