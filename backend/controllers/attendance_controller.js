@@ -1,4 +1,4 @@
-const Attendance = require("../models/temp"); //temp->Attendance
+const Attendance = require("../models/Attendance"); //temp->Attendance
 const Lecture = require("../models/Lecture");
 
 exports.markAttendance = async (req, res) => {
