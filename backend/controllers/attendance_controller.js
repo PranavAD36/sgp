@@ -26,8 +26,17 @@ exports.markAttendance = async (req, res) => {
     });
 
     if (existing) {
-      return res.json({ message: "Already Marked (30 Min Rule)" });
-    }
+  const now = new Date();
+  const diff = now - existing.timeMarked;
+  const remainingMs = 30 * 60 * 1000 - diff;
+  const remainingMin = Math.ceil(remainingMs / 60000);
+
+  return res.json({
+    message: "WAIT",
+    remaining: remainingMin
+  });
+}
+
 
     // 3. Save Attendance
     const record = new Attendance({
