@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Dashboard</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>ScanMark
+<header>
+ScanMark
 <div class="header-actions">
 <button onclick="history.back()">Back</button>
 <a href="index.html">Logout</a>
@@ -17,14 +18,25 @@
 
 <div class="container">
 <div class="box">
+
 <h2>Welcome Student</h2>
 
+<!-- MARK ATTENDANCE -->
 <input id="lecCode" placeholder="Lecture Code">
 <button class="btn" onclick="markAttendance()">Mark Attendance</button>
+<div id="msg" style="color:red; margin-top:10px;"></div>
 
 <hr>
 
-<button class="btn" onclick="viewAttendance()">View Attendance</button>
+<!-- RAW ATTENDANCE -->
+<button class="btn" onclick="viewAttendance()">View Raw Attendance</button>
+
+<hr>
+
+<!-- SUMMARY -->
+<button class="btn" onclick="viewSummary()">View Attendance Summary</button>
+
+<div id="summaryBox" style="margin-top:15px;"></div>
 
 </div>
 </div>
@@ -34,28 +46,79 @@
 <script type="module">
 import { postData, getData } from "./api.js";
 
+/* MARK ATTENDANCE */
 async function markAttendance(){
-const id = localStorage.getItem("studentId");
+  const id = localStorage.getItem("studentId");
 
-const res = await postData("/attendance/mark",{
-studentId: id,
-date: new Date().toISOString().split("T")[0],
-subject: "SE",
-status: "Present",
-lectureCode: lecCode.value
-});
+  const res = await postData("/attendance/mark",{
+    studentId: id,
+    date: new Date().toISOString().split("T")[0],
+    subject: "SE",
+    status: "Present",
+    lectureCode: lecCode.value
+  });
 
-alert(res.message);
+  const msgDiv = document.getElementById("msg");
+
+  if(res.message === "WAIT"){
+    msgDiv.innerText =
+     "Already Marked. You can mark attendance after "
+     + res.remaining + " min";
+  }else{
+    msgDiv.innerText = "";
+    alert(res.message);
+  }
 }
 
+/* RAW DATA */
 async function viewAttendance(){
-const id = localStorage.getItem("studentId");
-const data = await getData("/attendance/"+id);
-alert(JSON.stringify(data));
+  const id = localStorage.getItem("studentId");
+  const data = await getData("/attendance/"+id);
+  alert(JSON.stringify(data));
+}
+
+/* SUMMARY */
+async function viewSummary(){
+  const id = localStorage.getItem("studentId");
+  const data = await getData("/attendance/summary/" + id);
+
+  let html = "<h3>Attendance Summary</h3>";
+
+  if(!data.subjects || data.subjects.length === 0){
+    html += "<p>No Data</p>";
+    document.getElementById("summaryBox").innerHTML = html;
+    return;
+  }
+
+  html += `
+  <table border="1" width="100%" style="border-collapse:collapse">
+  <tr>
+    <th>Subject</th>
+    <th>Present/Total</th>
+    <th>Percentage</th>
+  </tr>
+  `;
+
+  data.subjects.forEach(s=>{
+    html += `
+    <tr>
+      <td>${s.subject}</td>
+      <td>${s.present}/${s.total}</td>
+      <td>${s.percent}%</td>
+    </tr>
+    `;
+  });
+
+  html += "</table>";
+  html += `<h3>Overall Attendance: ${data.overall}%</h3>`;
+
+  document.getElementById("summaryBox").innerHTML = html;
 }
 
 window.viewAttendance = viewAttendance;
 window.markAttendance = markAttendance;
+window.viewSummary = viewSummary;
+
 </script>
 
 </body>
