@@ -1,15 +1,10 @@
 const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({
-  studentId: {
-    type: String,
-    unique: true
-  },
+  studentId: { type: String, unique: true },
   name: String,
-  email: {
-    type: String,
-    unique: true
-  },
+  email: { type: String, unique: true },
+  phone: String,
   password: String
 });
 

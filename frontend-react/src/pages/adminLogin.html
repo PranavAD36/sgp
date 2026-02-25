@@ -19,19 +19,25 @@ ScanMark
 
 <h2>Admin Panel</h2>
 
+<!-- ================= STUDENT ================= -->
+
 <h3>Add Student</h3>
 <input id="sid" placeholder="Student ID">
 <input id="sname" placeholder="Name">
 <input id="semail" placeholder="Email">
+<input id="sphone" placeholder="Phone Number">
 <input id="spass" placeholder="Password">
 <button class="btn" onclick="addStudent()">Add Student</button>
 
 <hr>
 
+<!-- ================= FACULTY ================= -->
+
 <h3>Add Faculty</h3>
 <input id="fid" placeholder="Faculty ID">
 <input id="fname" placeholder="Name">
 <input id="femail" placeholder="Email">
+<input id="fphone" placeholder="Phone Number">
 <input id="fpass" placeholder="Password">
 <button class="btn" onclick="addFaculty()">Add Faculty</button>
 
@@ -44,23 +50,27 @@ ScanMark
 import { postData } from "./api.js";
 
 async function addStudent(){
-const res = await postData("/auth/add-student",{
-studentId: sid.value,
-name: sname.value,
-email: semail.value,
-password: spass.value
-});
-alert(res.message);
+  const res = await postData("/auth/add-student",{
+    studentId: document.getElementById("sid").value,
+    name: document.getElementById("sname").value,
+    email: document.getElementById("semail").value,
+    phone: document.getElementById("sphone").value,
+    password: document.getElementById("spass").value
+  });
+
+  alert(res.message);
 }
 
 async function addFaculty(){
-const res = await postData("/auth/add-faculty",{
-facultyId: fid.value,
-name: fname.value,
-email: femail.value,
-password: fpass.value
-});
-alert(res.message);
+  const res = await postData("/auth/add-faculty",{
+    facultyId: document.getElementById("fid").value,
+    name: document.getElementById("fname").value,
+    email: document.getElementById("femail").value,
+    phone: document.getElementById("fphone").value,
+    password: document.getElementById("fpass").value
+  });
+
+  alert(res.message);
 }
 
 window.addStudent = addStudent;
