@@ -1,6 +1,6 @@
-const Student = require("../models/student");
-const Faculty = require("../models/faculty");
-const Admin = require("../models/admin");
+const Student = require("../models/Student");
+const Faculty = require("../models/Faculty");
+const Admin = require("../models/Admin");
 
 // ADMIN LOGIN
 exports.adminLogin = async (req, res) => {
