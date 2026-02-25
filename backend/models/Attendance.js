@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema({
   studentId: String,
-  date: String,
-  subject: String,
-  status: String,
-  lectureCode: String,   // NEW
-  timeMarked: {          // NEW
+  lectureCode: String,
+  status: {
+    type: String,
+    default: "Present"
+  },
+  timeMarked: {
     type: Date,
     default: Date.now
   }

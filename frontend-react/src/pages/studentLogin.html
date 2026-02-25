@@ -48,28 +48,33 @@ import { postData, getData } from "./api.js";
 
 /* MARK ATTENDANCE */
 async function markAttendance(){
+
   const id = localStorage.getItem("studentId");
+  const lectureCode = document.getElementById("lecCode").value;
 
   const res = await postData("/attendance/mark",{
     studentId: id,
-    date: new Date().toISOString().split("T")[0],
-    subject: "SE",
-    status: "Present",
-    lectureCode: lecCode.value
+    lectureCode: lectureCode
   });
 
   const msgDiv = document.getElementById("msg");
 
   if(res.message === "WAIT"){
     msgDiv.innerText =
-     "Already Marked. You can mark attendance after "
-     + res.remaining + " min";
-  }else{
+      "Already Marked. You can mark attendance after "
+      + res.remaining + " min";
+  }
+  else if(res.message === "Lecture Not Active"){
+    msgDiv.innerText = "Lecture Not Active";
+  }
+  else if(res.message === "Attendance Marked"){
     msgDiv.innerText = "";
-    alert(res.message);
+    alert("Attendance Marked Successfully");
+  }
+  else{
+    msgDiv.innerText = res.message;
   }
 }
-
 /* RAW DATA */
 async function viewAttendance(){
   const id = localStorage.getItem("studentId");

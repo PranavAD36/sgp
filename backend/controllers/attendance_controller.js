@@ -1,13 +1,20 @@
 const Attendance = require("../models/Attendance");
 const Lecture = require("../models/Lecture");
 
-// MARK ATTENDANCE
+/* ===============================
+   MARK ATTENDANCE
+================================ */
 exports.markAttendance = async (req, res) => {
   try {
-    const { studentId, date, subject, status, lectureCode } = req.body;
+    const { studentId, lectureCode } = req.body;
 
+    if (!studentId || !lectureCode) {
+      return res.json({ message: "Missing Data" });
+    }
+
+    // 1️⃣ Check if Lecture is Active
     const lecture = await Lecture.findOne({
-      lectureCode,
+      lectureCode: lectureCode,
       status: "active"
     });
 
@@ -15,11 +22,12 @@ exports.markAttendance = async (req, res) => {
       return res.json({ message: "Lecture Not Active" });
     }
 
+    // 2️⃣ 30 Minute Rule
     const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
 
     const existing = await Attendance.findOne({
-      studentId,
-      lectureCode,
+      studentId: studentId,
+      lectureCode: lectureCode,
       timeMarked: { $gt: thirtyMinAgo }
     });
 
@@ -35,38 +43,48 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
+    // 3️⃣ Save Attendance
     const record = new Attendance({
-      studentId,
-      date,
-      subject,
-      status,
-      lectureCode
+      studentId: studentId,
+      lectureCode: lectureCode,
+      status: "Present"
     });
 
     await record.save();
-    res.json({ message: "Attendance Marked" });
+
+    return res.json({ message: "Attendance Marked" });
 
   } catch (err) {
     console.log(err);
-    res.json({ message: "Error Marking Attendance" });
+    return res.json({ message: "Error Marking Attendance" });
   }
 };
 
-// VIEW RAW ATTENDANCE
+
+/* ===============================
+   VIEW RAW ATTENDANCE
+================================ */
 exports.getAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
+
     const data = await Attendance.find({ studentId });
-    res.json(data);
-  } catch {
-    res.json({ message: "Error Fetching Attendance" });
+
+    return res.json(data);
+
+  } catch (err) {
+    return res.json({ message: "Error Fetching Attendance" });
   }
 };
 
-// ===== NEW SUMMARY FUNCTION =====
+
+/* ===============================
+   SUMMARY
+================================ */
 exports.getSummary = async (req, res) => {
   try {
     const { studentId } = req.params;
+
     const data = await Attendance.find({ studentId });
 
     let subjects = {};
@@ -74,31 +92,42 @@ exports.getSummary = async (req, res) => {
     let count = 0;
 
     data.forEach(r => {
-      if (!subjects[r.subject]) {
-        subjects[r.subject] = { present: 0, total: 0 };
+
+      // USE lectureCode (NOT subject)
+      if (!subjects[r.lectureCode]) {
+        subjects[r.lectureCode] = { present: 0, total: 0 };
       }
-      subjects[r.subject].total++;
-      if (r.status === "Present") subjects[r.subject].present++;
+
+      subjects[r.lectureCode].total++;
+
+      if (r.status === "Present") {
+        subjects[r.lectureCode].present++;
+      }
     });
 
     let result = [];
 
-    for (let sub in subjects) {
-      let p = subjects[sub].present;
-      let t = subjects[sub].total;
+    for (let code in subjects) {
+      let p = subjects[code].present;
+      let t = subjects[code].total;
       let percent = Math.round((p / t) * 100);
 
       overallSum += percent;
       count++;
 
-      result.push({ subject: sub, present: p, total: t, percent });
+      result.push({
+        subject: code,   // show lectureCode
+        present: p,
+        total: t,
+        percent
+      });
     }
 
     const overall = count ? Math.round(overallSum / count) : 0;
 
     res.json({ subjects: result, overall });
 
-  } catch {
+  } catch (err) {
     res.json({ message: "Summary Error" });
   }
-};
+};  
