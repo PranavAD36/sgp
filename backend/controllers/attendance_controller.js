@@ -12,7 +12,7 @@ exports.markAttendance = async (req, res) => {
       return res.json({ message: "Missing Data" });
     }
 
-    // 1️⃣ Check if Lecture is Active
+    // 1️⃣ Check if Lecture is Active (get active session)
     const lecture = await Lecture.findOne({
       lectureCode: lectureCode,
       status: "active"
@@ -22,12 +22,23 @@ exports.markAttendance = async (req, res) => {
       return res.json({ message: "Lecture Not Active" });
     }
 
-    // 2️⃣ 30 Minute Rule
+    // ✅ If already marked in this session (present/absent exists), block
+    const already = await Attendance.findOne({
+      studentId,
+      lectureSessionId: lecture._id
+    });
+
+    if (already) {
+      return res.json({ message: "Already Marked" });
+    }
+
+    // 2️⃣ 30 Minute Rule (kept as your old logic, based on lectureCode)
     const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
 
     const existing = await Attendance.findOne({
       studentId: studentId,
       lectureCode: lectureCode,
+      status: "Present",
       timeMarked: { $gt: thirtyMinAgo }
     });
 
@@ -43,23 +54,22 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
-    // 3️⃣ Save Attendance
+    // 3️⃣ Save Attendance as Present for this session
     const record = new Attendance({
       studentId: studentId,
       lectureCode: lectureCode,
+      lectureSessionId: lecture._id,
       status: "Present"
     });
 
     await record.save();
 
     return res.json({ message: "Attendance Marked" });
-
   } catch (err) {
     console.log(err);
     return res.json({ message: "Error Marking Attendance" });
   }
 };
-
 
 /* ===============================
    VIEW RAW ATTENDANCE
@@ -68,15 +78,13 @@ exports.getAttendance = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    const data = await Attendance.find({ studentId });
+    const data = await Attendance.find({ studentId }).sort({ timeMarked: -1 });
 
     return res.json(data);
-
   } catch (err) {
     return res.json({ message: "Error Fetching Attendance" });
   }
 };
-
 
 /* ===============================
    SUMMARY
@@ -92,8 +100,7 @@ exports.getSummary = async (req, res) => {
     let count = 0;
 
     data.forEach(r => {
-
-      // USE lectureCode (NOT subject)
+      // group by lectureCode (subject code)
       if (!subjects[r.lectureCode]) {
         subjects[r.lectureCode] = { present: 0, total: 0 };
       }
@@ -110,13 +117,13 @@ exports.getSummary = async (req, res) => {
     for (let code in subjects) {
       let p = subjects[code].present;
       let t = subjects[code].total;
-      let percent = Math.round((p / t) * 100);
+      let percent = t ? Math.round((p / t) * 100) : 0;
 
       overallSum += percent;
       count++;
 
       result.push({
-        subject: code,   // show lectureCode
+        subject: code,
         present: p,
         total: t,
         percent
@@ -126,8 +133,8 @@ exports.getSummary = async (req, res) => {
     const overall = count ? Math.round(overallSum / count) : 0;
 
     res.json({ subjects: result, overall });
-
   } catch (err) {
+    console.log(err);
     res.json({ message: "Summary Error" });
   }
-};  
+};
