@@ -1,31 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Faculty Profile</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+
+<header>
+  ScanMark
+  <div class="header-actions">
+    <button onclick="openProfile()">My Profile</button>
+    <button onclick="history.back()">Back</button>
+    <a href="index.html" onclick="logout()">Logout</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="box">
     <h2>Faculty Profile</h2>
+    <div id="msg" style="margin-top:10px;"></div>
 
-    <div id="msg"></div>
-
-    <div class="card">
+    <div style="margin-top:15px;">
       <p><b>Faculty ID:</b> <span id="id"></span></p>
       <p><b>Name:</b> <span id="name"></span></p>
       <p><b>Email:</b> <span id="email"></span></p>
       <p><b>Phone:</b> <span id="phone"></span></p>
     </div>
-
-    <br />
-    <button onclick="goBack()">Back</button>
-    <button onclick="logout()">Logout</button>
   </div>
+</div>
 
-  <script src="profile.js"></script>
-  <script>
-    loadProfile("faculty");
-  </script>
+<footer>© 2026</footer>
+
+<script src="profile.js"></script>
+<script>
+  loadProfile("faculty");
+</script>
+
 </body>
 </html>
