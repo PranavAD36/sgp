@@ -20,10 +20,12 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/auth");
 const attendanceRoutes = require("./routes/attendance");
 const lectureRoutes = require("./routes/lecture");
+const profileRoutes = require("./routes/profile");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/lecture", lectureRoutes);
+app.use("/api/profile", profileRoutes);
 
 // server start
 const PORT = process.env.PORT || 5000;

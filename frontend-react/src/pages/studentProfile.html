@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Profile</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Student Profile</h2>
+
+    <div id="msg"></div>
+
+    <div class="card">
+      <p><b>Student ID:</b> <span id="id"></span></p>
+      <p><b>Name:</b> <span id="name"></span></p>
+      <p><b>Email:</b> <span id="email"></span></p>
+      <p><b>Phone:</b> <span id="phone"></span></p>
+    </div>
+
+    <br />
+    <button onclick="goBack()">Back</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="profile.js"></script>
+  <script>
+    loadProfile("student");
+  </script>
+</body>
+</html>

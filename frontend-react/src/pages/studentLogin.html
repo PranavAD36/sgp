@@ -11,8 +11,9 @@
 <header>
 ScanMark
 <div class="header-actions">
-<button onclick="history.back()">Back</button>
-<a href="index.html">Logout</a>
+  <button onclick="openProfile()">My Profile</button>
+  <button onclick="history.back()">Back</button>
+  <a href="index.html" onclick="logout()">Logout</a>
 </div>
 </header>
 
@@ -21,19 +22,16 @@ ScanMark
 
 <h2>Welcome Student</h2>
 
-<!-- MARK ATTENDANCE -->
 <input id="lecCode" placeholder="Lecture Code">
 <button class="btn" onclick="markAttendance()">Mark Attendance</button>
 <div id="msg" style="color:red; margin-top:10px;"></div>
 
 <hr>
 
-<!-- RAW ATTENDANCE -->
 <button class="btn" onclick="viewAttendance()">View Raw Attendance</button>
 
 <hr>
 
-<!-- SUMMARY -->
 <button class="btn" onclick="viewSummary()">View Attendance Summary</button>
 
 <div id="summaryBox" style="margin-top:15px;"></div>
@@ -46,9 +44,25 @@ ScanMark
 <script type="module">
 import { postData, getData } from "./api.js";
 
-/* MARK ATTENDANCE */
-async function markAttendance(){
+// ✅ Set role/userId for profile (studentId already exists in your project)
+const sidLocal = localStorage.getItem("studentId");
+if (sidLocal) {
+  localStorage.setItem("role", "student");
+  localStorage.setItem("userId", sidLocal);
+}
 
+function openProfile() {
+  window.location.href = "studentProfile.html";
+}
+
+function logout() {
+  localStorage.removeItem("role");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("studentId");
+}
+
+// MARK ATTENDANCE
+async function markAttendance(){
   const id = localStorage.getItem("studentId");
   const lectureCode = document.getElementById("lecCode").value;
 
@@ -60,9 +74,10 @@ async function markAttendance(){
   const msgDiv = document.getElementById("msg");
 
   if(res.message === "WAIT"){
-    msgDiv.innerText =
-      "Already Marked. You can mark attendance after "
-      + res.remaining + " min";
+    msgDiv.innerText = "Already Marked. You can mark attendance after " + res.remaining + " min";
+  }
+  else if(res.message === "Already Marked"){
+    msgDiv.innerText = "Already Marked for this lecture.";
   }
   else if(res.message === "Lecture Not Active"){
     msgDiv.innerText = "Lecture Not Active";
@@ -75,14 +90,15 @@ async function markAttendance(){
     msgDiv.innerText = res.message;
   }
 }
-/* RAW DATA */
+
+// RAW DATA
 async function viewAttendance(){
   const id = localStorage.getItem("studentId");
   const data = await getData("/attendance/"+id);
   alert(JSON.stringify(data));
 }
 
-/* SUMMARY */
+// SUMMARY
 async function viewSummary(){
   const id = localStorage.getItem("studentId");
   const data = await getData("/attendance/summary/" + id);
@@ -120,6 +136,9 @@ async function viewSummary(){
   document.getElementById("summaryBox").innerHTML = html;
 }
 
+// expose for HTML onclick
+window.openProfile = openProfile;
+window.logout = logout;
 window.viewAttendance = viewAttendance;
 window.markAttendance = markAttendance;
 window.viewSummary = viewSummary;

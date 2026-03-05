@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faculty Dashboard</title>
-<link rel="stylesheet" href="style.css">
+  <title>Faculty Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>ScanMark
-<div class="header-actions">
-<button onclick="history.back()">Back</button>
-<a href="index.html">Logout</a>
-</div>
+  <div class="header-actions">
+    <button onclick="openProfile()">My Profile</button>
+    <button onclick="history.back()">Back</button>
+    <a href="index.html" onclick="logout()">Logout</a>
+  </div>
 </header>
 
 <div class="container">
@@ -38,49 +39,65 @@
 <script type="module">
 import { startLecture, endLecture, postData } from "./api.js";
 
-async function startLec(){
-const code = lecCode.value;
-if(!code){ alert("Enter Lecture Code"); return; }
+// ✅ Set role/userId (assumption: facultyId is stored at login time)
+const fidLocal = localStorage.getItem("facultyId");
+if (fidLocal) {
+  localStorage.setItem("role", "faculty");
+  localStorage.setItem("userId", fidLocal);
+}
 
-const res = await startLecture({
-lectureCode: code,
-subject:"SE",
-day:"Monday",
-startTime:"9:10",
-endTime:"10:10"
-});
-alert(res.message);
+function openProfile() {
+  window.location.href = "facultyProfile.html";
+}
+
+function logout() {
+  localStorage.removeItem("role");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("facultyId");
+}
+
+async function startLec(){
+  const code = lecCode.value;
+  if(!code){ alert("Enter Lecture Code"); return; }
+
+  const res = await startLecture({
+    lectureCode: code,
+    subject:"SE",
+    day:"Monday",
+    startTime:"9:10",
+    endTime:"10:10"
+  });
+
+  alert(res.message);
 }
 
 async function endLec(){
-const code = lecCode.value;
-if(!code){ alert("Enter Lecture Code"); return; }
+  const code = lecCode.value;
+  if(!code){ alert("Enter Lecture Code"); return; }
 
-const res = await endLecture({ lectureCode: code });
-alert(res.message);
+  const res = await endLecture({ lectureCode: code });
+  alert(res.message);
 }
 
-// NEW MANUAL MARK
 async function manualMark(){
-const code = lecCode.value;
-const student = sid.value;
+  const code = lecCode.value;
+  const student = sid.value;
 
-if(!code || !student){
-alert("Enter Lecture Code & Student ID");
-return;
+  if(!code || !student){
+    alert("Enter Lecture Code & Student ID");
+    return;
+  }
+
+  const res = await postData("/attendance/mark",{
+    studentId: student,
+    lectureCode: code
+  });
+
+  alert(res.message);
 }
 
-const res = await postData("/attendance/mark",{
-studentId: student,
-date: new Date().toISOString().split("T")[0],
-subject: "SE",
-status: "Present",
-lectureCode: code
-});
-
-alert(res.message);
-}
-
+window.openProfile = openProfile;
+window.logout = logout;
 window.startLec = startLec;
 window.endLec = endLec;
 window.manualMark = manualMark;

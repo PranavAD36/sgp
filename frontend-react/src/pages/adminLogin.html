@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
-<link rel="stylesheet" href="style.css">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
 ScanMark
 <div class="header-actions">
-<button onclick="history.back()">Back</button>
-<a href="index.html">Logout</a>
+  <button onclick="openProfile()">My Profile</button>
+  <button onclick="history.back()">Back</button>
+  <a href="index.html" onclick="logout()">Logout</a>
 </div>
 </header>
 
@@ -20,8 +21,6 @@ ScanMark
 <div class="box">
 
 <h2>Admin Panel</h2>
-
-<!-- ================= STUDENT ================= -->
 
 <h3>Add Student</h3>
 <input id="sid" placeholder="Student ID">
@@ -32,8 +31,6 @@ ScanMark
 <button class="btn" onclick="addStudent()">Add Student</button>
 
 <hr>
-
-<!-- ================= FACULTY ================= -->
 
 <h3>Add Faculty</h3>
 <input id="fid" placeholder="Faculty ID">
@@ -50,6 +47,23 @@ ScanMark
 
 <script type="module">
 import { postData } from "./api.js";
+
+// ✅ Set role/userId (assumption: adminId is stored at login time)
+const aidLocal = localStorage.getItem("adminId");
+if (aidLocal) {
+  localStorage.setItem("role", "admin");
+  localStorage.setItem("userId", aidLocal);
+}
+
+function openProfile() {
+  window.location.href = "adminProfile.html";
+}
+
+function logout() {
+  localStorage.removeItem("role");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("adminId");
+}
 
 async function addStudent(){
   const res = await postData("/auth/add-student",{
@@ -75,9 +89,11 @@ async function addFaculty(){
   alert(res.message);
 }
 
+window.openProfile = openProfile;
+window.logout = logout;
 window.addStudent = addStudent;
 window.addFaculty = addFaculty;
 </script>
 
 </body>
-</html>
+</html> 
